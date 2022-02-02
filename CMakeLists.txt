@@ -8,8 +8,10 @@ add_subdirectory(src)
 add_subdirectory(app)
 
 add_subdirectory(external/glfw)
+
+add_definitions(-DGLEW_STATIC)
+add_subdirectory(external/glew)
+
 find_package(OpenGL REQUIRED)
 
-find_package(GLEW 2.0 REQUIRED)
-
-target_link_libraries(src glfw opengl32 GLEW::GLEW ${GLFW_LIBRARIES})
+target_link_libraries(src glfw opengl32 libglew_static ${GLFW_LIBRARIES})

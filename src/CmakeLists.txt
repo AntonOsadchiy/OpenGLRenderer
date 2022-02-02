@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.19)
+add_library( src  util.h util.cpp )
+
+target_include_directories(src PUBLIC ../include)
+link_directories(${CMAKE_SOURCE_DIR}/lib)
+
+target_compile_features(src PUBLIC cxx_std_20)

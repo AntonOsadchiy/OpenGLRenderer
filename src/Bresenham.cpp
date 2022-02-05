@@ -1,14 +1,13 @@
-#include "Bresenham.h"
 #include "util.h"
 
 float map_screenspace(int a, int size)
 {
-    int res = float(a) * 2 / size;
-    return res -= 1;
+    return float(a) * 2 / size - 1;
 }
 
 void drawLine(int x1, int y1, int x2, int y2, const glfwWindowHandle& window)
 {
+    std::cout << "DrawLine Called" << std::endl;
     int m_new = 2 * (y2 - y1);
     int slope_error_new = m_new - (x2 - x1);
     for (int x = x1, y = y1; x <= x2; x++)

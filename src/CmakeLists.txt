@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.19)
-add_library( src  util.h Bresenham.h  util.cpp Bresenham.cpp)
+
+file(GLOB_RECURSE SOURCE_FILES
+    ${CMAKE_SOURCE_DIR}/src/*.cpp)
+
+file(GLOB_RECURSE HEADER_FILES 
+    ${CMAKE_SOURCE_DIR}/src/*.h
+	${CMAKE_SOURCE_DIR}/src/*.hpp)
+
+add_library( src_lib STATIC  ${SOURCE_FILES} ${HEADER_FILES})
 
 #target_include_directories(src PUBLIC ../include)
 
-target_compile_features(src PUBLIC cxx_std_20)
+target_compile_features(src_lib PUBLIC cxx_std_20)

@@ -1,6 +1,5 @@
 #include "util.h"
 
-
 glfwInitialiser* glfwInitialiser::m_instance = nullptr;
 
 glfwInitialiser* glfwInitialiser::getInstance()

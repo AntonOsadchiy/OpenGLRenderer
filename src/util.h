@@ -47,4 +47,7 @@ struct glfwWindowHandle
 	glfwWindowHandle& operator=( glfwWindowHandle&&) = default;
 
 	inline GLFWwindow* get() { return m_window; }
+	inline int width() const { int width; int height; glfwGetWindowSize(m_window, &width, &height);  return width; }
+	inline int height() const { int width; int height; glfwGetWindowSize(m_window, &width, &height);  return height; }
 };
+

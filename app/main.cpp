@@ -23,41 +23,37 @@ int main()
 
 	float vertices_buffer[] = {
 		0.5f, 0.5f,
-		0.0f, 0.0f,
-		-0.5f, 0.5f
+		-0.5f, 0.5f,
+		-0.5f, -0.5f,
+		0.5f, -0.5f
 	};
-	uint32_t vertices;
-	glGenBuffers(1, &vertices);
-	glBindBuffer(GL_ARRAY_BUFFER, vertices);
-	glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), vertices_buffer, GL_STATIC_DRAW);
+	unsigned int indices_buffer[] = { 0, 1, 2, 2, 3, 0 };
+
+
+	uint32_t vertices_id;
+	glGenBuffers(1, &vertices_id);
+	glBindBuffer(GL_ARRAY_BUFFER, vertices_id);
+	glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), vertices_buffer, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0 );
 	glEnableVertexAttribArray(0);
 
-	static constexpr auto vertex_shader = std::string_view("#version 330 core\n"
-	"\n"
-	"layout (location = 0) in vec4 position;"
-	"void main()\n"
-	"{\n"
-	"	gl_Position = position;\n"
-	"}\n");
+	uint32_t indices_id;
+	glGenBuffers(1, &indices_id);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices_id);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6*sizeof(uint32_t), indices_buffer, GL_STATIC_DRAW);
 
-	static constexpr auto fragment_shader = std::string_view("#version 330 core \n"
-	"\n"
-	"layout (location = 0) out vec4 color;"
-	"void main()\n"
-	"{\n"
-	"	color = vec4(1.0, 0.0, 0.2, 1.0);\n"
-	"}\n");
 
-	auto shader_id = Shader::create_shader(vertex_shader, fragment_shader);
+	auto shader_id = Shader::create_shader(
+		Shader::parse_shader("C:/Users/1voic/source/repos/OpenGLRenderer/res/shaders/vertex.shader"),
+		Shader::parse_shader("C:/Users/1voic/source/repos/OpenGLRenderer/res/shaders/fragment.shader"));
 	glUseProgram(shader_id);
 
 	while (!glfwWindowShouldClose(window.get()))
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
 		glfwSwapBuffers(window.get());
 		glfwPollEvents();

@@ -1,5 +1,8 @@
 #include "Shader.h"
+
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -49,4 +52,16 @@ unsigned int Shader::create_shader(string_view vertex_shader, string_view fragme
 	}
 
 	return program;
+}
+
+
+std::string Shader::parse_shader(std::string_view filepath)
+{
+	std::ifstream stream(filepath.data());
+	std::string line;
+	std::stringstream ss;
+	while (getline(stream, line))
+		ss << line << '\n';
+
+	return ss.str();
 }

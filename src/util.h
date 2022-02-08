@@ -3,25 +3,6 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-using DEBUGPROC = void (APIENTRY*)(GLenum source,
-	GLenum type,
-	GLuint id,
-	GLenum severity,
-	GLsizei length,
-	const GLchar* message,
-	const void* userParam);
-
-
-void gl_debug_output(GLenum source,
-	GLenum type,
-	GLuint id,
-	GLenum severity,
-	GLsizei length,
-	const GLchar* message,
-	const void* userParam);
-
-void setup_debug_callback(DEBUGPROC fun);
-
 
 class glfwInitialiser
 {
@@ -68,3 +49,10 @@ struct glfwWindowHandle
 	inline int width() const { int width; int height; glfwGetWindowSize(m_window, &width, &height);  return width; }
 	inline int height() const { int width; int height; glfwGetWindowSize(m_window, &width, &height);  return height; }
 };
+
+void gl_debug_output(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar*, const void*);
+
+using DEBUGPROC = void (APIENTRY*)(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar*, const void*);
+void setup_debug_callback(DEBUGPROC fun);
+
+void init_glew();

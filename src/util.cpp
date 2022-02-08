@@ -59,6 +59,22 @@ void setup_debug_callback(DEBUGPROC fun)
 }
 
 
+void init_glew()
+{
+    glewExperimental = GL_TRUE;
+    auto err = glewInit();
+#ifndef NDEBUG
+    if (err != GLEW_OK)
+    {
+        std::cout << "failed to initialize glew" << std::endl;
+        return;
+    }
+    setup_debug_callback(gl_debug_output);
+    std::cout << glGetString(GL_VERSION) << std::endl;
+#endif
+}
+
+
 glfwInitialiser* glfwInitialiser::m_instance = nullptr;
 
 glfwInitialiser* glfwInitialiser::getInstance()
@@ -75,10 +91,17 @@ GLFWwindow* glfwInitialiser::createWindow(int width, int height, const char* tit
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 #ifndef NDBUG
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+    auto window = glfwCreateWindow(width, height, title, monitor, share);
+    if (!window)
+        std::cout << "window creation error" << std::endl;
+    return window;
+#else
+    return glfwCreateWindow(width, height, title, monitor, share);
 #endif
-	return glfwCreateWindow(width, height, title, monitor, share);
+
 }
 
 

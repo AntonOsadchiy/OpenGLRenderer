@@ -5,12 +5,16 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(src)
 add_subdirectory(app)
+
+
 add_subdirectory(external/glfw)
 
 add_definitions(-DGLEW_STATIC)
 add_subdirectory(external/glew)
 
+add_subdirectory(external/glm)
+
 find_package(OpenGL REQUIRED)
 
-target_link_libraries(src_lib glfw opengl32 libglew_static ${GLFW_LIBRARIES})
-target_link_libraries(renderer PRIVATE src_lib )
+target_link_libraries(src_lib PRIVATE glm glfw opengl32 libglew_static ${GLFW_LIBRARIES})
+target_link_libraries(renderer PRIVATE src_lib glm glfw opengl32 libglew_static ${GLFW_LIBRARIES} )

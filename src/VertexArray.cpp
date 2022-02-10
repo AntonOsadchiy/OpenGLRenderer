@@ -10,6 +10,12 @@ VertexArray::VertexArray()
 	glGenVertexArrays(1, &m_renderer_id);
 }
 
+VertexArray::VertexArray(const VertexBuffer& vb, const VertexBufferLayout& layout)
+{
+	glGenVertexArrays(1, &m_renderer_id);
+	add_buffer(vb, layout);
+}
+
 VertexArray::~VertexArray()
 {
 	glDeleteVertexArrays(1, &m_renderer_id);

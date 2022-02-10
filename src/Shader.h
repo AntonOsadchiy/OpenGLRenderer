@@ -4,7 +4,7 @@
 #include <array>
 #include <unordered_map>
 
-
+#include <glm/glm.hpp>
 class Shader
 {
 private:
@@ -32,10 +32,16 @@ public:
 		glUniform1i(get_uniform_location(uniform), n);
 	}
 
-	template<> void set_uniform<std::array<float, 4>>(std::string_view uniform, const std::array<float,4>& data)
+	template<> void set_uniform<glm::vec4>(std::string_view uniform, const glm::vec4& data)
 	{
 		bind();
 		glUniform4f(get_uniform_location(uniform), data[0], data[1], data[2], data[3]);
+	}
+
+	template<>void set_uniform<glm::mat4>(std::string_view uniform, const glm::mat4& data)
+	{
+		bind();
+		glUniformMatrix4fv(get_uniform_location(uniform), 1, GL_FALSE, &data[0][0]);
 	}
 
 private:

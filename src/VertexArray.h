@@ -16,6 +16,7 @@ private:
 	VertexArray& operator=(VertexArray&&) = delete;
 public:
 	VertexArray();
+	VertexArray(const VertexBuffer&, const VertexBufferLayout&);
 	~VertexArray();
 
 	void bind() const;

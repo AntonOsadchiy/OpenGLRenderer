@@ -1,0 +1,7 @@
+add_executable(Bresenham_test Bresenham.h Bresenham.cpp)
+
+target_compile_features(Bresenham_test PRIVATE cxx_std_20)
+
+target_include_directories(Bresenham_test PUBLIC ../../src)
+
+target_link_libraries(Bresenham_test PRIVATE src_lib)

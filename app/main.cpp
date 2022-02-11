@@ -6,7 +6,6 @@
 #include <glm/ext.hpp>
 
 #include "util.h"
-#include "Bresenham.h"
 
 #include "Shader.h"
 #include "VertexBuffer.h"
@@ -63,9 +62,11 @@ int main()
 	Renderer renderer;
 	while (!glfwWindowShouldClose(window.get()))
 	{	
+		renderer.clear();
+
 		shader.set_uniform("u_model_view_projection", mvp);
 		//shader.set_uniform("u_color", glm::vec4{ 0.15f, 0.15f, 0.15f, 1.0f });
-		renderer.draw(va, ib, shader);
+		Renderer::draw(va, ib, shader);
 
 		model = glm::rotate(model, angle, axis);
 		mvp = projection * view * model;

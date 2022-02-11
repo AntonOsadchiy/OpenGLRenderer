@@ -15,7 +15,7 @@ public:
 	VertexBuffer(const std::array<T, N>& vertices, int param = GL_STATIC_DRAW) { init( vertices.data(), sizeof(T) * N, param); }
 
 	template<typename T>
-	VertexBuffer(const T* vertices, uint32_t n, int param = GL_STATIC_DRAW) { init(vertices, sizeof(T) * n, param); }
+	VertexBuffer(const T* vertices, uint32_t len, int param = GL_STATIC_DRAW) { init(vertices, sizeof(T) * len, param); }
 
 	~VertexBuffer();
 

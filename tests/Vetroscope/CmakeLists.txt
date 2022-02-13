@@ -1,0 +1,7 @@
+add_executable(Test_Vetroscope Vetroscope.cpp)
+
+target_compile_features(Test_Vetroscope PRIVATE cxx_std_20)
+
+target_include_directories(Test_Vetroscope PUBLIC ../../src)
+
+target_link_libraries(Test_Vetroscope PRIVATE src_lib)

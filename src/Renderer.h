@@ -18,11 +18,4 @@ public:
 		shader.bind();
 		glDrawElements(GL_TRIANGLES, ib.len(), ib.openGL_type(), nullptr);
 	}
-
-
-	inline static void draw_points(const VertexArray& va, uint32_t num_points)
-	{
-		va.bind();
-		glDrawArrays(GL_POINTS, 0, num_points);
-	}
 };

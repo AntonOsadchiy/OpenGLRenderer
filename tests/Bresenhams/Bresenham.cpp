@@ -23,19 +23,25 @@ float map_screenspace(int a, int size)
 std::vector<float> get_points_on_line(int x1, int y1, int x2, int y2, const glfwWindowHandle& window)
 {
     std::vector<float> points;
-    int m_new = 2 * (y2 - y1);
-    int slope_error_new = m_new - (x2 - x1);
-    for (int x = x1, y = y1; x <= x2; x++)
+    float k = ((float)y2 - y1) / (x2 - x1);
+    float d = 2 * k - 1;
+    int y = y1;
+
+    points.push_back(map_screenspace(x1, window.width()));
+    points.push_back(map_screenspace(y1, window.height()));
+
+    for (int x = x1 + 1; x <= x2; x++)
     {
+        if (d > 0)
+        {
+            d += 2 * k - 2;
+            y++;
+        }
+        else
+            d += 2 * k;
+
         points.push_back(map_screenspace(x, window.width()));
         points.push_back(map_screenspace(y, window.height()));
-
-        slope_error_new += m_new;
-        if (slope_error_new >= 0)
-        {
-            y++;
-            slope_error_new -= 2 * (x2 - x1);
-        }
     }
     return points;
 }

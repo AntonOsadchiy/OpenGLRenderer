@@ -17,8 +17,8 @@ private:
 	float m_speed;
 
 public:
-	Camera(glm::vec3 pos = glm::vec3{ 0.f,0.f,2.f }, float speed = 1.f)
-		:m_pos(pos), m_target(glm::normalize(pos)), m_up(0.f, 1.f, 0.f), m_speed(speed)
+	Camera(glm::vec3 pos , glm::vec3 target = glm::vec3{ 0.f,0.f,0.f }, float speed = 1.f)
+		:m_pos(pos), m_target(target), m_up(0.f, 1.f, 0.f), m_speed(speed)
 	{
 	}
 
@@ -28,10 +28,9 @@ public:
 	inline auto left() const { return glm::cross(m_target, m_up); }
 
 
-	inline glm::mat4 transform() const
-	{
-		return glm::lookAt(m_pos, m_target, m_up);
-	}
+	inline glm::mat4 transform() const { return glm::lookAt(m_pos, m_target, m_up); }
+
+	inline void move(glm::vec3 delta)  { m_pos += delta * m_speed; }
 
 	inline float& speed() { return m_speed; }
 	inline float speed() const { return m_speed; }

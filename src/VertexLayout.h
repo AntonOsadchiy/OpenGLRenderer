@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <stdint.h>
 #include <vector>
+#include <iostream>
 
 class VertexBufferLayout
 {
@@ -24,7 +25,8 @@ public:
 	template<typename T>
 	void push(uint32_t len)
 	{
-		static_assert(false);
+		//static_assert(false);
+		std::cout << "bad push\n";
 	}
 
 	template<>

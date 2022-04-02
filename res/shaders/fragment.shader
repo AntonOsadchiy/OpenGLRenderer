@@ -1,11 +1,13 @@
 #version 330 core
 
-	in vec4 v_vertex_color;
+	in vec2 v_tex_coord;
 
 	layout (location = 0) out vec4 color;
+
+	uniform sampler2D u_texture_2d;
 
 	void main()
 	{
 		
-		color = v_vertex_color;
+		color = texture(u_texture_2d, v_tex_coord);
 	}

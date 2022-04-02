@@ -75,15 +75,10 @@ void init_glew()
 }
 
 
-glfwInitialiser* glfwInitialiser::m_instance = nullptr;
-
 glfwInitialiser* glfwInitialiser::getInstance()
 {
-	if (m_instance == nullptr)
-	{
-		m_instance = new glfwInitialiser();
-	}
-	return m_instance;
+    static glfwInitialiser instance;
+	return &instance;
 }
 
 GLFWwindow* glfwInitialiser::createWindow(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share)

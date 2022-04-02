@@ -19,7 +19,6 @@ public:
 
 
 private:
-	static glfwInitialiser* m_instance;
 
 	glfwInitialiser();
 	~glfwInitialiser();

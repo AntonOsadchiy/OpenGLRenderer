@@ -3,6 +3,7 @@
 #include <string>
 #include <array>
 #include <unordered_map>
+#include <iostream>
 
 #include <glm/glm.hpp>
 class Shader
@@ -23,7 +24,8 @@ public:
 	template<typename T>
 	void set_uniform(std::string_view, const T&)
 	{
-		static_assert(false);
+		//static_assert(false);
+		std::cout << "bad set_uniform\n";
 	}
 
 	template<> void set_uniform<int32_t>(std::string_view uniform, const int32_t& n)

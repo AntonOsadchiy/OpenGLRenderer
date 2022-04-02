@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <thread>
 
 #include "util.h"
 
@@ -27,20 +28,55 @@ int main()
 	glfwMakeContextCurrent(window.get());
 	init_glew();
 
-	//constexpr std::array vertices_buffer{	 300.f,  300.f, 1.0f, 1.0f, 1.f, 0.f, 0.f, 1.f,
-	//										-300.f,  300.f, 0.0f, 1.0f, 0.f, 0.f, 1.f, 1.f,
-	//										-300.f, -300.f, 0.0f, 0.0f, 1.f, 0.f, 0.f, 1.f,
-	//										 300.f, -300.f, 1.0f, 0.0f, 0.f, 1.f, 0.f, 1.f };
 	constexpr std::array vertices_buffer{
-		 100.f,  100.f,  100.f,	 1.f, 0.f, 0.f, 1.f, //0
-		-100.f,  100.f, -100.f,	 1.f, 0.f, 0.f, 1.f, //1
-		-100.f,  100.f,  100.f,	 1.f, 0.f, 0.f, 1.f, //2
-		 100.f, -100.f, -100.f,	 0.f, 0.f, 1.f, 1.f, //3
-		-100.f, -100.f, -100.f,	 0.f, 0.f, 1.f, 1.f, //4
-		 100.f,  100.f, -100.f,	 0.f, 0.f, 1.f, 1.f, //5
-		 100.f, -100.f,  100.f,	 1.f, 0.f, 0.f, 1.f, //6
-		-100.f, -100.f,  100.f,	 0.f, 0.f, 1.f, 1.f  //7
+		 -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
+
+	glEnable(GL_DEPTH_TEST);
+
+	//glEnable(GL_CULL_FACE);
+	//glFrontFace(GL_CCW);
+	//glCullFace(GL_BACK);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -48,55 +84,79 @@ int main()
 	VertexBuffer vb(vertices_buffer, GL_STATIC_DRAW);
 	VertexBufferLayout layout;
 	layout.push<float>(3);
-	layout.push<float>(4);
+	layout.push<float>(2);
 	VertexArray va(vb, layout);
 
-	constexpr std::array<uint16_t, 6 * 6> indices_buffer{ 0, 1, 2, 1, 3, 4,   
-														5, 6, 3, 7, 3, 6,  
-														2, 4, 7, 0, 7, 6,   
-														0, 5, 1, 1, 5, 3,  
-														5, 0, 6, 7, 4, 3, 
-														2, 1, 4, 0, 2, 7 }; 
+	constexpr std::array<uint16_t, 6 * 6> indices_buffer{	 0, 1, 2, 3, 4, 5, 6,
+															 7, 8, 9,10,11,12,13,
+															14,15,16,17,18,19,20,
+															21,22,23,24,25,26,27,
+															28,29,30,31,32,33,34,
+															35}; 
 	IndexBuffer ib(indices_buffer, GL_STATIC_DRAW);
 
-	Shader shader("C:/Users/1voic/source/repos/OpenGLRenderer/res/shaders/vertex.shader",
-		"C:/Users/1voic/source/repos/OpenGLRenderer/res/shaders/fragment.shader");
+	Shader shader("C:/dev/src/opengl_renderer/OpenGLRenderer/res/shaders/vertex.shader",
+		"C:/dev/src/opengl_renderer/OpenGLRenderer/res/shaders/fragment.shader");
 
-	//Texture texture("C:/Users/1voic/source/repos/OpenGLRenderer/res/textures/Portal-Transparent-PNG.png");
-	//texture.bind();
-	//shader.set_uniform("u_texture", 0);
+	Texture<GL_TEXTURE_2D> texture("C:/dev/src/opengl_renderer/OpenGLRenderer/res/textures/crate1.png");
+	texture.bind();
+	shader.set_uniform("u_texture_2d", 0);
 
-	glm::mat4 projection = glm::perspective(103.f, (float)window_width / window_height, -1.f, 1.f);
+	glm::mat4 projection = glm::perspective(103.f, (float)window_width / window_height, 1.f, -1.f);
 
 	float start_angle = 1.f;
-	float angle = 0.005f;
+	float angle = 0.00025f;
+	//float angle = 0.f;
 	glm::vec3 axis{ 0.f, 1.f, 0.f };
-	float scale = 0.005f;
+	float scale = 2.f;
 	glm::mat4 model = glm::rotate(glm::scale(glm::mat4(1.f), glm::vec3{ scale, scale, scale }), angle, axis);
 
-	Camera cam({ 1.f, 1.f, 2.f });
+	Camera cam({ 0.f, 1.5f, -3.f });
 	glm::mat4 mvp = projection * cam.transform() * model;
 
-	glEnable(GL_CULL_FACE);
-	glFrontFace(GL_CW);
-	glCullFace(GL_BACK);
 
-	//glfwSetKeyCallback(window.get(), Camera::on_key);
 
 	Renderer renderer;
 	while (!glfwWindowShouldClose(window.get()))
-	{	
+	{
 		renderer.clear();
 
 		shader.set_uniform("u_model_view_projection", mvp);
 		Renderer::draw(va, ib, shader);
 
-		if(angle < start_angle)
+		if (angle < start_angle)
 			model = glm::rotate(model, angle, axis);
 		mvp = projection * cam.transform() * model;
 
 		glfwSwapBuffers(window.get());
 		glfwPollEvents();
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//glfwSetKeyCallback(window.get(), Camera::on_key);
+	//auto render = [&]()
+	//{
+	//	Renderer renderer;
+	//	while (!glfwWindowShouldClose(window.get()))
+	//	{
+	//		renderer.clear();
+
+	//		shader.set_uniform("u_model_view_projection", mvp);
+	//		Renderer::draw(va, ib, shader);
+
+	//		if (angle < start_angle)
+	//			model = glm::rotate(model, angle, axis);
+	//		mvp = projection * cam.transform() * model;
+
+	//		glfwSwapBuffers(window.get());
+	//		glfwPollEvents();
+	//	}
+	//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//};
+	//std::thread renderer_thread( render );
+	
+	//renderer_thread.join();
 	return 0;
 }

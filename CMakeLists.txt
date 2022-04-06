@@ -9,9 +9,11 @@ add_subdirectory(tests)
 
 add_subdirectory(external/glfw)
 
-add_definitions(-DGLEW_STATIC)
+add_definitions(-DGLEW_STATIC)  
 add_subdirectory(external/glew)
 
 add_subdirectory(external/glm)
+
+add_subdirectory(external/assimp)
 
 find_package(OpenGL REQUIRED)

@@ -6,11 +6,16 @@
 #include <iostream>
 
 #include <glm/glm.hpp>
+
+#include "Material.h"
+#include "LightType.h"
+
 class Shader
 {
 private:
-	uint32_t m_renderer_id;
 	std::unordered_map<std::string_view, int> m_uniform_location_cache;
+	uint32_t m_renderer_id;
+	uint32_t m_num_lights = 0;
 
 public:
 	Shader(std::string_view, std::string_view);
@@ -21,30 +26,21 @@ public:
 
 	int32_t get_uniform_location(std::string_view uniform);
 
-	template<typename T>
-	void set_uniform(std::string_view, const T&)
-	{
-		//static_assert(false);
-		std::cout << "bad set_uniform\n";
-	}
+	inline void set_uniform(std::string_view uniform, const int32_t& n) { glUniform1i(get_uniform_location(uniform), n); }
+	inline void set_uniform(std::string_view uniform, const float& n) { glUniform1f(get_uniform_location(uniform), n); }
+	inline void set_uniform(std::string_view uniform, const glm::vec3& data) { glUniform3f(get_uniform_location(uniform), data[0], data[1], data[2]); }
+	inline void set_uniform(std::string_view uniform, const glm::vec4& data) { glUniform4f(get_uniform_location(uniform), data[0], data[1], data[2], data[3]); }
+	inline void set_uniform(std::string_view uniform, const glm::mat4& data) { glUniformMatrix4fv(get_uniform_location(uniform), 1, GL_FALSE, &data[0][0]); }
 
-	template<> void set_uniform<int32_t>(std::string_view uniform, const int32_t& n)
-	{
-		bind();
-		glUniform1i(get_uniform_location(uniform), n);
-	}
+	void set_material(const Material& m);
+	//void set_material(std::string_view, const Material& m);
 
-	template<> void set_uniform<glm::vec4>(std::string_view uniform, const glm::vec4& data)
-	{
-		bind();
-		glUniform4f(get_uniform_location(uniform), data[0], data[1], data[2], data[3]);
-	}
-
-	template<>void set_uniform<glm::mat4>(std::string_view uniform, const glm::mat4& data)
-	{
-		bind();
-		glUniformMatrix4fv(get_uniform_location(uniform), 1, GL_FALSE, &data[0][0]);
-	}
+	void set_light(const DirectionalLight&, uint32_t);
+	void set_light(const PointLight&, uint32_t);
+	void set_light(const SpotLight&, uint32_t);
+	void add_light(const DirectionalLight&);
+	void add_light(const PointLight&);
+	void add_light(const SpotLight&);
 
 private:
 	Shader(const Shader&) = delete;
@@ -53,6 +49,10 @@ private:
 	Shader& operator=(Shader&&) = delete;
 
 	static unsigned int create_shader(std::string_view vertex_shader, std::string_view fragment_shader);
-
 	static std::string parse_shader(std::string_view filename);
+
+	void set_light_properties( const glm::vec3&, const glm::vec3&, const glm::vec3&, const glm::vec3&, uint32_t);
+	inline void set_light_pos_and_dir(const glm::vec4&, const glm::vec3&, uint32_t);
+	inline void set_light_consts(float, float, float, float, uint32_t);
+	inline void set_light_consts(float val, uint32_t index) { set_light_consts(val, val, val, val, index); }
 };

@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <vector>
 #include <iostream>
+#include <cassert>
 
 class VertexBufferLayout
 {
@@ -21,12 +22,21 @@ private:
 	std::vector<Element> m_elements;
 	uint32_t m_stride = 0;
 public:
+	VertexBufferLayout() {}
+	VertexBufferLayout(uint32_t i, uint32_t j, uint32_t k)
+	{
+		push<float>(i);
+		push<float>(j);
+		push<float>(k);
+	}
+	
 
 	template<typename T>
 	void push(uint32_t len)
 	{
 		//static_assert(false);
 		std::cout << "bad push\n";
+		assert(false);
 	}
 
 	template<>

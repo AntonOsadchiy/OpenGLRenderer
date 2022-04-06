@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <string>
 
 using namespace std;
 
@@ -25,6 +26,80 @@ unsigned int compile_shader(unsigned int type, const char* source)
 	}
 
 	return shader_id;
+}
+
+void Shader::set_material(const Material& m)
+{
+	m.diffuse_map.bind(0);
+	set_uniform("u_material.diffuse_map", 0);
+	m.specular_map.bind(1);
+	set_uniform("u_material.specular_map", 1);
+	set_uniform("u_material.shininess", m.shininess);
+}
+
+void Shader::add_light(const DirectionalLight& light)
+{
+	set_light_properties(light.color(), light.ambient(), light.diffuse(), light.specular(), m_num_lights);
+	set_light_pos_and_dir(glm::vec4(0.0f), light.direction(), m_num_lights);
+	set_light_consts(-1.0f, m_num_lights);
+
+	m_num_lights++;
+}
+
+
+void Shader::add_light(const PointLight& light)
+{
+	set_light_properties(light.color(), light.ambient(), light.diffuse(), light.specular(), m_num_lights);
+	set_light_pos_and_dir(light.pos(), glm::vec3(0.f), m_num_lights);
+	set_light_consts(light.attenuation_linear(), light.attenuation_quadratic(), -1.0f, -1.0f, m_num_lights);
+
+	m_num_lights++;
+}
+
+void Shader::add_light(const SpotLight& light)
+{
+	set_light_properties(light.color(), light.ambient(), light.diffuse(), light.specular(), m_num_lights);
+	set_light_pos_and_dir(light.pos(), light.direction(), m_num_lights);
+	set_light_consts(light.attenuation_linear(), light.attenuation_quadratic(), light.angle(), light.outer_angle(), m_num_lights);
+
+	m_num_lights++;
+}
+
+
+std::string lights(uint32_t i)
+{
+	std::stringstream ss;
+	ss << "u_lights[" << std::to_string(i) << "].";
+	return ss.str();
+}
+
+
+void Shader::set_light_properties(const glm::vec3& color,
+	const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, uint32_t index)
+{
+	std::string l = lights(index);
+	set_uniform(l + "color", color);
+
+	set_uniform(l + ("ambient_comp"), ambient);
+	set_uniform(l + ("diffuse_comp"), diffuse);
+	set_uniform(l + ("specular_comp"), specular);
+}
+
+void Shader::set_light_pos_and_dir(const glm::vec4& pos, const glm::vec3& direction, uint32_t index)
+{
+	std::string l = lights(index);
+	set_uniform(l + ("pos"), pos);
+	set_uniform(l + ("direction"), direction);
+}
+
+void Shader::set_light_consts(float attenuation_lin, float attenuatin_quad, float spot_angle, float outer_angle, uint32_t index)
+{
+	std::string l = lights(index);
+	set_uniform(l + ("attenuation_linear"), attenuation_lin);
+	set_uniform(l + ("attenuation_quadratic"), attenuatin_quad);
+
+	set_uniform(l + ("spot_angle"), spot_angle);
+	set_uniform(l + ("spot_outer_angle"), outer_angle);
 }
 
 unsigned int Shader::create_shader(string_view vertex_shader, string_view fragment_shader)

@@ -30,7 +30,10 @@ public:
 
 	inline glm::mat4 transform() const { return glm::lookAt(m_pos, m_target, m_up); }
 
-	inline void move(glm::vec3 delta)  { m_pos += delta * m_speed; }
+	inline void move(const glm::vec3& delta)  { m_pos += delta * m_speed; }
+	inline void move_to(const glm::vec3& pos) { m_pos = pos; }
+
+	inline auto pos() const { return m_pos; }
 
 	inline float& speed() { return m_speed; }
 	inline float speed() const { return m_speed; }

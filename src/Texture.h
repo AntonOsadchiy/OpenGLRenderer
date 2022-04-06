@@ -46,7 +46,7 @@ public:
 		glDeleteTextures(1, &m_renderer_id);
 	}
 
-	void bind(int32_t slot = 0)const
+	void bind(int32_t slot)const
 	{
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(type(), m_renderer_id);

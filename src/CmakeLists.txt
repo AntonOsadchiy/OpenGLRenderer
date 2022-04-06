@@ -10,7 +10,8 @@ file(GLOB_RECURSE HEADER_FILES
 add_library( src_lib STATIC  ${SOURCE_FILES} ${HEADER_FILES})
 
 #target_include_directories(src PUBLIC ../include)
+target_include_directories(src_lib PUBLIC ../../external/assimp/include/)
 
 target_compile_features(src_lib PUBLIC cxx_std_20)
 
-target_link_libraries(src_lib PUBLIC glm glfw opengl32 libglew_static ${GLFW_LIBRARIES})
+target_link_libraries(src_lib PUBLIC assimp glm glfw opengl32 libglew_static ${GLFW_LIBRARIES})

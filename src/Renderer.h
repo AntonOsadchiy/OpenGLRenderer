@@ -3,8 +3,8 @@
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "Shader.h"
-#include "Mesh.h"
 
+class Model;
 
 class Renderer
 {
@@ -20,10 +20,7 @@ public:
 		glDrawElements(GL_TRIANGLES, ib.len(), ib.openGL_type(), nullptr);
 	}
 
-	inline void draw(const Mesh& mesh, Shader& shader)
-	{
-		if (mesh.material_is_valid())
-			int i = 0;
-		glDrawElements(GL_TRIANGLES, mesh.ib().len(), mesh.ib().openGL_type(), nullptr);
-	}
+
+
+	void draw(const Model& model, Shader& shader);
 };

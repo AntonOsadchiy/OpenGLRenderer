@@ -9,8 +9,13 @@
 
 	struct Material 
 	{
-		sampler2D diffuse_map;
-		sampler2D specular_map;
+		sampler2D texture_diffuse1;
+		sampler2D texture_diffuse2;
+		sampler2D texture_diffuse3;
+		sampler2D texture_diffuse4;
+		sampler2D texture_specular1;
+		sampler2D texture_specular2;
+		sampler2D texture_specular3;
 		float shininess;
 	};
 	struct Light 
@@ -49,7 +54,7 @@
 
 	vec3 get_light_comp(Light u_light)
 	{
-		vec3 diffuse_comp = vec3(texture(u_material.diffuse_map, v_tex_coord));
+		vec3 diffuse_comp = vec3(texture(u_material.texture_diffuse1, v_tex_coord));
 		vec3 ambient_color = diffuse_comp * u_light.ambient_comp * u_light.color;
 
 		vec3 frag_normal = normalize(v_normal_model * v_vertex_normal);
@@ -61,29 +66,31 @@
 			light_dir = normalize(vec3(u_light.pos) - v_fragment_pos);
 		}
 		else
-			light_dir = -u_light.direction;
+			light_dir = -normalize(u_light.direction);
 
 		float diffuse_impact = max(dot(frag_normal, light_dir), 0);
 		vec3 diffuse_color = diffuse_impact * (u_light.color * diffuse_comp * u_light.diffuse_comp);
 
 		
-		vec3 specular_comp = vec3(texture(u_material.specular_map, v_tex_coord));
+		vec3 specular_comp = vec3(texture(u_material.texture_specular1, v_tex_coord));
 		vec3 view_direction = normalize(u_camera_pos - v_fragment_pos);
-		vec3 reflect_direction = reflect(-light_dir, frag_normal);
-
-		float spec = pow(max(dot(view_direction, reflect_direction), 0.0), u_material.shininess);
+		vec3 reflect_direction = reflect(light_dir, frag_normal);
+		float spec = pow(max( -dot(view_direction, reflect_direction), 0.0 ), u_material.shininess);
 		vec3 specular_color = ((specular_comp * u_light.specular_comp) * spec) * u_light.color;
+		//vec3 specular_color = ((specular_comp * 0.3) * spec) * u_light.color;
+		//vec3 specular_color = vec3(0.0);
 
 		float angle = dot(light_point_dir, light_dir); 
-		float spot_fade = get_spot_coef(angle, u_light.spot_angle, u_light.spot_outer_angle);
+		float spot_fade = 1.0 ;
 		float d = 1.0;
 		float attenuation = 1.0;
 		if(u_light.pos.w == 1.0)
 		{
+			spot_fade = get_spot_coef(angle, u_light.spot_angle, u_light.spot_outer_angle);
 			d = distance(vec3(u_light.pos), v_fragment_pos);
 			attenuation = 1.0 / (1.0 + u_light.attenuation_linear*d + u_light.attenuation_quadratic*d*d);
 		}
-		return ambient_color + (spot_fade * attenuation) * diffuse_color + specular_color;
+		return ambient_color + ((spot_fade * attenuation) * diffuse_color + specular_color);
 	}
 
 
@@ -96,7 +103,7 @@
 		{
 			light_color += get_light_comp(u_lights[i]);
 		}
-
-		color = vec4(light_color, 1.0);
-		//color = vec4((ambient_color + diffuse_color + specular_color), 1.0) * vec4(1.0, 1.0, 1.0, 1.0);
+		//color = texture(u_material.texture_specular1, v_tex_coord);
+		//color = vec4(light_color, 1.0);
+		color = vec4((ambient_color + diffuse_color + specular_color), 1.0) * vec4(1.0, 1.0, 1.0, 1.0);
 	}

@@ -10,6 +10,9 @@
 #include "Material.h"
 #include "LightType.h"
 
+
+class Model;
+class Mesh;
 class Shader
 {
 private:
@@ -26,13 +29,13 @@ public:
 
 	int32_t get_uniform_location(std::string_view uniform);
 
-	inline void set_uniform(std::string_view uniform, const int32_t& n) { glUniform1i(get_uniform_location(uniform), n); }
-	inline void set_uniform(std::string_view uniform, const float& n) { glUniform1f(get_uniform_location(uniform), n); }
+	inline void set_uniform(std::string_view uniform, int32_t n) { glUniform1i(get_uniform_location(uniform), n); }
+	inline void set_uniform(std::string_view uniform, float n) { glUniform1f(get_uniform_location(uniform), n); }
 	inline void set_uniform(std::string_view uniform, const glm::vec3& data) { glUniform3f(get_uniform_location(uniform), data[0], data[1], data[2]); }
 	inline void set_uniform(std::string_view uniform, const glm::vec4& data) { glUniform4f(get_uniform_location(uniform), data[0], data[1], data[2], data[3]); }
 	inline void set_uniform(std::string_view uniform, const glm::mat4& data) { glUniformMatrix4fv(get_uniform_location(uniform), 1, GL_FALSE, &data[0][0]); }
 
-	void set_material(const Material& m);
+	//void set_material(const Material& m);
 	//void set_material(std::string_view, const Material& m);
 
 	void set_light(const DirectionalLight&, uint32_t);
@@ -40,7 +43,13 @@ public:
 	void set_light(const SpotLight&, uint32_t);
 	void add_light(const DirectionalLight&);
 	void add_light(const PointLight&);
+	void add_lights(const PointLight*, uint32_t);
 	void add_light(const SpotLight&);
+
+	void set_model(const Model&);
+	void set_mesh(const Mesh& mesh);
+
+	inline void finish_setting_ligths() { set_uniform("u_n_lights", (int)m_num_lights); }
 
 private:
 	Shader(const Shader&) = delete;

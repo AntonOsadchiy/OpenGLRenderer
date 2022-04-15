@@ -10,13 +10,18 @@ class VertexArray
 private:
 	uint32_t m_renderer_id;
 
-	VertexArray(const VertexArray&) = delete;
-	VertexArray& operator=(const VertexArray&) = delete;
-	VertexArray(VertexArray&&) = delete;
-	VertexArray& operator=(VertexArray&&) = delete;
+	VertexArray(const VertexArray&) = default;
+	VertexArray& operator=(const VertexArray&) = default;
+	
 public:
 	VertexArray();
 	VertexArray(const VertexBuffer&, const VertexBufferLayout&);
+
+
+
+	VertexArray(VertexArray&&) = default;
+	VertexArray& operator=(VertexArray&&) = default;
+
 	~VertexArray();
 
 	void bind() const;

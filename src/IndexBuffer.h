@@ -13,10 +13,17 @@ private:
 	uint32_t m_renderer_id;
 	uint32_t m_length;
 
+	IndexBuffer(const IndexBuffer&) = default;
+	IndexBuffer& operator=(const IndexBuffer&) = default;
 public:
+	explicit IndexBuffer():m_renderer_id(0), m_length(0) {}
 
 	template<int N>
 	IndexBuffer(const std::array<uint_type, N>& indices, int param = GL_STATIC_DRAW):m_length(N) { init(indices.data(), sizeof(uint_type) * N, param); }
+
+	IndexBuffer(IndexBuffer&&) = default;
+	IndexBuffer& operator=(IndexBuffer&&) = default;
+	
 
 	IndexBuffer(const uint_type* indices, uint32_t n, int param = GL_STATIC_DRAW):m_length(n) { init(indices, sizeof(uint_type) * n, param); }
 
@@ -48,9 +55,5 @@ private:
 		glNamedBufferData(m_renderer_id, size, data, param);
 	}
 
-	IndexBuffer(const IndexBuffer&) = delete;
-	IndexBuffer& operator=(const IndexBuffer&) = delete;
 
-	IndexBuffer(IndexBuffer&&) = delete;
-	IndexBuffer& operator=(IndexBuffer&&) = delete;
 };

@@ -17,39 +17,45 @@ struct Vertex
 	glm::vec3 pos;
 	glm::vec3 normal;
 	glm::vec2 tex_coords;
-	static constexpr uint32_t elems_per_vertex = 8;
+
+	static VertexBufferLayout layout; 
 };
 
 
 class Mesh
 {
 private:
+	static constexpr uint32_t floats_per_vertex = sizeof(Vertex) / sizeof(float);
 
-	using tex_vector = std::vector<Texture<GL_TEXTURE_2D>>;
 
 	std::vector<Vertex> m_vertices;
 	std::vector<uint32_t> m_indices;
 
-	std::unique_ptr<Material> m_material = nullptr;
+	std::vector<AssimpTexture> m_textures;
 
-	VertexBuffer m_vertex_buffer;
-	IndexBuffer<uint32_t> m_index_buffer;
-	VertexArray m_vertex_array;
+	std::unique_ptr<VertexBuffer> m_vertex_buffer = nullptr;
+	std::unique_ptr<IndexBuffer<uint32_t>> m_index_buffer = nullptr;
+	std::unique_ptr<VertexArray> m_vertex_array = nullptr;
 	
+
+	Mesh(const Mesh&) = default;
+	Mesh& operator=(const Mesh&) = default;
 public:
+	Mesh() {} 
+	Mesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
+	Mesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices, const std::vector<AssimpTexture>& textures);
 	Mesh(const float* vertex_data, uint32_t len1, const uint32_t* indices_data, uint32_t len2);
 
+	void start_open_gl();
 
-	inline const VertexArray& va() const { return m_vertex_array; }
-	inline const IndexBuffer<uint32_t>& ib() const { return m_index_buffer; }
+	Mesh(Mesh&&) = default;
+	Mesh& operator=(Mesh&&) = default;
 
-	inline void add_material(std::string_view tex1, std::string_view tex2, float shininess)
-	{
-		auto material = std::make_unique<Material>(tex1, tex2, shininess);
-		m_material = std::move(material);
-	}
-	inline bool material_is_valid() const { return !(!m_material); }
-	inline const Material& material() const { return *m_material; }
+	inline void set_textures(const std::vector<AssimpTexture>& textures) { m_textures = textures; }
+	inline const std::vector<AssimpTexture>& textures() const { return m_textures; }
+
+	inline const VertexArray& va() const { return *m_vertex_array; }
+	inline const IndexBuffer<uint32_t>& ib() const { return *m_index_buffer; }
 
 	void bind();
 };

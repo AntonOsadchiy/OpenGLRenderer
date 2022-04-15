@@ -1,4 +1,6 @@
 #include "Shader.h"
+#include "Model.h"
+#include "Mesh.h"
 
 #include <iostream>
 #include <fstream>
@@ -28,14 +30,57 @@ unsigned int compile_shader(unsigned int type, const char* source)
 	return shader_id;
 }
 
-void Shader::set_material(const Material& m)
+void Shader::set_model(const Model& model)
 {
-	m.diffuse_map.bind(0);
-	set_uniform("u_material.diffuse_map", 0);
-	m.specular_map.bind(1);
-	set_uniform("u_material.specular_map", 1);
-	set_uniform("u_material.shininess", m.shininess);
+	for (auto& mesh : model.meshes())
+		set_mesh(mesh);
 }
+
+void Shader::set_mesh(const Mesh& mesh)
+{
+	unsigned int diffuseNr = 1;
+	unsigned int specularNr = 1;
+	unsigned int normalNr = 1;
+	unsigned int heightNr = 1;
+	for (int i = 0; i < mesh.textures().size(); i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		string number;
+		string name = mesh.textures()[i].type;
+		if (name == "texture_diffuse")
+			number = std::to_string(diffuseNr++);
+		else if (name == "texture_specular")
+			number = std::to_string(specularNr++);
+		else if (name == "texture_normal")
+			number = std::to_string(normalNr++); 
+		else if (name == "texture_height")
+			number = std::to_string(heightNr++);
+		set_uniform((std::string{ "u_material." } + name + number).c_str(), i);
+		set_uniform("u_material.snininess", 128);
+
+		glBindTexture(GL_TEXTURE_2D, mesh.textures()[i].id);
+	}
+}
+
+
+void Shader::set_light(const SpotLight&, uint32_t)
+{
+}
+
+void Shader::add_lights(const PointLight* lights, uint32_t n)
+{	
+	for (int i = 0; i < n; i++)
+		add_light(lights[i]);
+}
+
+//void Shader::set_material(const Material& m)
+//{
+//	m.diffuse_map.bind(0);
+//	set_uniform("u_material.diffuse_map", 0);
+//	m.specular_map.bind(1);
+//	set_uniform("u_material.specular_map", 1);
+//	set_uniform("u_material.shininess", m.shininess);
+//}
 
 void Shader::add_light(const DirectionalLight& light)
 {

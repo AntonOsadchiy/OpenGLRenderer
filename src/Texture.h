@@ -5,6 +5,7 @@
 
 #include "vendor/stb_image.h"
 
+
 template<uint32_t Type>
 class Texture
 {
@@ -14,14 +15,64 @@ private:
 	uint8_t* m_local_buffer;
 	int32_t m_width, m_height, m_BPP;
 
+
+	Texture(const Texture<Type>&) = delete;
+	Texture<Type>& operator=(const Texture<Type>&) = delete;
 public:
-	static constexpr uint32_t type_2d = GL_TEXTURE_2D;
-	static constexpr uint32_t type_3d = GL_TEXTURE_3D;
 
 	inline constexpr uint32_t type()const { return Type; }
 	
-	Texture(std::string_view filepath)
-		:m_renderer_id(0), m_filepath(filepath), m_local_buffer(nullptr), m_width(0), m_height(0), m_BPP(0)
+	Texture() :m_renderer_id(-1), m_filepath(), m_local_buffer(nullptr), m_width(0), m_height(0), m_BPP(0) {}
+
+	Texture(std::string_view filepath) : m_renderer_id(0), m_filepath(filepath), m_local_buffer(nullptr), m_width(0), m_height(0), m_BPP(0) 
+	{ load_texture(filepath); }
+
+	Texture(Texture<Type>&& tex) : m_renderer_id(tex.m_renderer_id), m_filepath(std::move(tex.m_filepath)), m_local_buffer(nullptr),
+		m_width(tex.m_width), m_height(tex.m_height), m_BPP(tex.m_BPP)
+	{
+		std::swap(m_local_buffer, tex.m_local_buffer);
+	}
+
+	Texture<Type>& operator=(Texture<Type>&& tex)
+	{
+		if (m_local_buffer == tex.m_local_buffer)
+			return *this;
+		m_renderer_id = std::move(tex.m_renderer_id);
+		m_filepath = std::move(tex.m_filepath);
+		delete[] m_local_buffer;
+		m_local_buffer = nullptr;
+		std::swap(m_local_buffer, tex.m_local_buffer);
+		m_width = tex.m_width;
+		m_height = tex.m_height;
+		m_BPP = tex.m_BPP;
+	}
+
+	~Texture()
+	{
+		unbind();
+		if (m_local_buffer)
+			stbi_image_free(m_local_buffer);
+		glDeleteTextures(1, &m_renderer_id);
+	}
+
+	void set(std::string filepath)
+	{
+		m_filepath = std::move(filepath);
+		load_texture(m_filepath);
+	}
+
+	void bind(int32_t slot)const
+	{
+		glActiveTexture(GL_TEXTURE0 + slot);
+		glBindTexture(type(), m_renderer_id);
+	}
+	inline void unbind() const { glBindTexture(GL_TEXTURE_2D, 0); }
+
+	inline auto width() const { return m_width; }
+	inline auto height() const { return m_height; }
+
+private:
+	void load_texture(std::string_view filepath)
 	{
 		stbi_set_flip_vertically_on_load(1);
 		m_local_buffer = stbi_load(filepath.data(), &m_width, &m_height, &m_BPP, 4);
@@ -38,21 +89,12 @@ public:
 
 		unbind();
 	}
-	~Texture()
-	{
-		unbind();
-		if (m_local_buffer)
-			stbi_image_free(m_local_buffer);
-		glDeleteTextures(1, &m_renderer_id);
-	}
+};
 
-	void bind(int32_t slot)const
-	{
-		glActiveTexture(GL_TEXTURE0 + slot);
-		glBindTexture(type(), m_renderer_id);
-	}
-	inline void unbind() const { glBindTexture(GL_TEXTURE_2D, 0); }
+using Texture2D = Texture<GL_TEXTURE_2D>;
 
-	inline auto width() const { return m_width; }
-	inline auto height() const { return m_height; }
+struct AssimpTexture {
+	unsigned int id;
+	std::string type;
+	std::string path;
 };

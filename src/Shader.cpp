@@ -177,6 +177,10 @@ unsigned int Shader::create_shader(string_view vertex_shader, string_view fragme
 std::string Shader::parse_shader(std::string_view filepath)
 {
 	std::ifstream stream(filepath.data());
+	if (!stream.is_open())
+	{
+		std::cout << "Failed to open " + std::string(filepath.data()) << std::endl;
+	}
 	std::string line;
 	std::stringstream ss;
 	while (getline(stream, line))

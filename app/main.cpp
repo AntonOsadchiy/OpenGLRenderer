@@ -46,8 +46,8 @@ int main()
 
 	glm::mat4 projection = glm::perspective(90.f, (float)window_width / window_height, 1.f, -1.f);
 
-	Shader light_source_shader("C:/dev/src/opengl_renderer/OpenGLRenderer/res/shaders/light_source_vertex.shader",
-		"C:/dev/src/opengl_renderer/OpenGLRenderer/res/shaders/light_source_fragment.shader");
+	Shader light_source_shader(RES_PATH"/shaders/light_source_vertex.shader",
+		RES_PATH"/shaders/light_source_fragment.shader");
 	glm::vec4 initial_light_pos{ 2.0f, 2.0f, 2.0f, 1.0f };
 	glm::vec3 light_dir = glm::normalize(glm::vec3{ 0.f, -1.f, -1.f });
 	DirectionalLight white_light{
@@ -61,10 +61,10 @@ int main()
 		//glm::cos(glm::radians(50.0f)), glm::cos(glm::radians(60.0f))
 	};
 
-	auto model = glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3{ 0.6f }), glm::vec3{ 0.0f });
+	auto model = glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3{ 0.33f }), glm::vec3{ 0.0f });
 	Camera cam{ glm::vec3{0.0f, 2.0f, 3.0f}, glm::vec3{0.0f} };
-	Shader shader("C:/dev/src/opengl_renderer/OpenGLRenderer/res/shaders/vertex.shader",
-		"C:/dev/src/opengl_renderer/OpenGLRenderer/res/shaders/fragment.shader");
+	Shader shader(RES_PATH"/shaders/vertex.shader",
+		RES_PATH"/shaders/fragment.shader");
 
 	shader.bind();
 	shader.set_uniform("u_model", model);
@@ -74,19 +74,20 @@ int main()
 	shader.add_light(white_light);
 	shader.finish_setting_ligths();
 
-	Model backpack{ "C:/dev/src/opengl_renderer/OpenGLRenderer/res/models/backpack/backpack.obj" };
+	Model backpack{ RES_PATH"/models/rx7/rx7.obj" };
 
 
-	float scale_factor = 0.97;
+	float speed = 0.99;
 	float delta = 0.0009;
 	Renderer renderer;
 	while (!glfwWindowShouldClose(window.get()))
 	{
 		if (glfwGetKey(window.get(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window.get(), true);
-
+		
 		if (glfwGetKey(window.get(), GLFW_KEY_W) == GLFW_PRESS)
 			cam.move_to(glm::rotate(glm::mat4{ 1.0f }, -delta, { 1.f,0.f,0.f }) * glm::vec4{ cam.pos(), 1.0f });
+			//cam)
 		if (glfwGetKey(window.get(), GLFW_KEY_S) == GLFW_PRESS)
 			cam.move_to(glm::rotate(glm::mat4{ 1.0f },  delta, { 1.f,0.f,0.f }) * glm::vec4{ cam.pos(), 1.0f });
 		if (glfwGetKey(window.get(), GLFW_KEY_A) == GLFW_PRESS)
@@ -94,9 +95,10 @@ int main()
 		if (glfwGetKey(window.get(), GLFW_KEY_D) == GLFW_PRESS)
 			cam.move_to(glm::rotate(glm::mat4{ 1.0f },  delta, { 0.f,1.f,0.f }) * glm::vec4{ cam.pos(), 1.0f });
 		if (glfwGetKey(window.get(), GLFW_KEY_UP) == GLFW_PRESS)
-			model = glm::scale(model, glm::vec3{ 1 / scale_factor });
+			cam.move(cam.direction());
+			//mode.scale()
 		if (glfwGetKey(window.get(), GLFW_KEY_DOWN) == GLFW_PRESS)
-			model = glm::scale(model, glm::vec3{ scale_factor });
+			cam.move(-cam.direction());
 	
 		shader.set_uniform("u_cam_pos", cam.pos());
 		shader.set_uniform("u_model", model);

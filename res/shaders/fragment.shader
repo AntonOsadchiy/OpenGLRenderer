@@ -76,8 +76,8 @@
 		vec3 view_direction = normalize(u_camera_pos - v_fragment_pos);
 		vec3 reflect_direction = reflect(light_dir, frag_normal);
 		float spec = pow(max( -dot(view_direction, reflect_direction), 0.0 ), u_material.shininess);
-		vec3 specular_color = ((specular_comp * u_light.specular_comp) * spec) * u_light.color;
-		//vec3 specular_color = ((specular_comp * 0.3) * spec) * u_light.color;
+		//vec3 specular_color = ((specular_comp * u_light.specular_comp) * spec) * u_light.color;
+		vec3 specular_color = ((specular_comp * 0.33) * spec) * u_light.color;
 		//vec3 specular_color = vec3(0.0);
 
 		float angle = dot(light_point_dir, light_dir); 
@@ -103,7 +103,7 @@
 		{
 			light_color += get_light_comp(u_lights[i]);
 		}
-		//color = texture(u_material.texture_specular1, v_tex_coord);
+		color = texture(u_material.texture_specular1, v_tex_coord);
 		//color = vec4(light_color, 1.0);
-		color = vec4((ambient_color + diffuse_color + specular_color), 1.0) * vec4(1.0, 1.0, 1.0, 1.0);
+		//color = vec4((ambient_color + diffuse_color + specular_color), 1.0) * vec4(1.0, 1.0, 1.0, 1.0);
 	}
